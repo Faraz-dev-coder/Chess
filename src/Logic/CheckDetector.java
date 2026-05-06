@@ -4,7 +4,6 @@ import Model.*;
 import Pieces.Piece;
 import java.util.List;
 
-
 public class CheckDetector {
 
     public static boolean isKingInCheck(Board board, boolean isWhite) {
@@ -69,5 +68,4 @@ public class CheckDetector {
     public static boolean isStalemate(Board board, boolean isWhite, GameController controller) {
         return !isKingInCheck(board, isWhite) && !hasLegalMoves(board, isWhite, controller);
     }
-
 }

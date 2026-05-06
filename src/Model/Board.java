@@ -5,6 +5,16 @@ import Pieces.*;
 public class Board {
 
     private Tile[][] board;
+    private boolean whiteKingMoved = false;
+    private boolean blackKingMoved = false;
+    private boolean whiteRookAMoved = false; // Queen-side rook
+    private boolean whiteRookHMoved = false; // King-side rook
+    private boolean blackRookAMoved = false;
+    private boolean blackRookHMoved = false;
+    private int lastPawnMoveFromRow = -1;
+    private int lastPawnMoveFromCol = -1;
+    private int lastPawnMoveToRow = -1;
+    private int lastPawnMoveToCol = -1;
 
     public Board() {
         board = new Tile[8][8];
@@ -24,9 +34,7 @@ public class Board {
         return board[row][col];
     }
 
-    // 🔥 Setup initial chess positions
     private void setupPieces() {
-
         // Pawns
         for (int col = 0; col < 8; col++) {
             board[1][col].setPiece(new Pawn(false));
@@ -59,4 +67,45 @@ public class Board {
         board[0][4].setPiece(new King(false));
         board[7][4].setPiece(new King(true));
     }
+
+    // Castling state tracking
+    public void setKingMoved(boolean isWhite) {
+        if (isWhite) whiteKingMoved = true;
+        else blackKingMoved = true;
+    }
+
+    public void setRookMoved(boolean isWhite, boolean isQueenSide) {
+        if (isWhite) {
+            if (isQueenSide) whiteRookAMoved = true;
+            else whiteRookHMoved = true;
+        } else {
+            if (isQueenSide) blackRookAMoved = true;
+            else blackRookHMoved = true;
+        }
+    }
+
+    public boolean hasKingMoved(boolean isWhite) {
+        return isWhite ? whiteKingMoved : blackKingMoved;
+    }
+
+    public boolean hasRookMoved(boolean isWhite, boolean isQueenSide) {
+        if (isWhite) {
+            return isQueenSide ? whiteRookAMoved : whiteRookHMoved;
+        } else {
+            return isQueenSide ? blackRookAMoved : blackRookHMoved;
+        }
+    }
+
+    // En passant tracking
+    public void setLastPawnMove(int fromRow, int fromCol, int toRow, int toCol) {
+        this.lastPawnMoveFromRow = fromRow;
+        this.lastPawnMoveFromCol = fromCol;
+        this.lastPawnMoveToRow = toRow;
+        this.lastPawnMoveToCol = toCol;
+    }
+
+    public int getLastPawnMoveFromRow() { return lastPawnMoveFromRow; }
+    public int getLastPawnMoveFromCol() { return lastPawnMoveFromCol; }
+    public int getLastPawnMoveToRow() { return lastPawnMoveToRow; }
+    public int getLastPawnMoveToCol() { return lastPawnMoveToCol; }
 }

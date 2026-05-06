@@ -30,6 +30,7 @@ public class King extends Piece {
 
         List<Move> moves = new ArrayList<>();
 
+        // Normal king moves (one square in any direction)
         int[][] dirs = {
                 {1,0}, {-1,0}, {0,1}, {0,-1},
                 {1,1}, {1,-1}, {-1,1}, {-1,-1}
@@ -50,7 +51,44 @@ public class King extends Piece {
             }
         }
 
+        // CASTLING MOVES
+        addCastlingMoves(board, row, col, moves);
+
         return moves;
+    }
+
+    private void addCastlingMoves(Board board, int row, int col, List<Move> moves) {
+        // King must be on starting position and not have moved
+        if (board.hasKingMoved(isWhite)) return;
+        if ((isWhite && row != 7) || (!isWhite && row != 0)) return;
+        if (col != 4) return; // King starts at column 4
+
+        // KINGSIDE CASTLING (0-0)
+        // Rook at position 7, no pieces between king and rook, rook hasn't moved
+        if (!board.hasRookMoved(isWhite, false)) {
+            Tile rookTile = board.getTile(row, 7);
+            if (rookTile.isOccupied() && rookTile.getPiece().getClass().getSimpleName().equals("Rook")
+                    && rookTile.getPiece().isWhite() == isWhite) {
+                // Check if squares between are empty
+                if (!board.getTile(row, 5).isOccupied() && !board.getTile(row, 6).isOccupied()) {
+                    moves.add(new Move(row, col, row, 6, "castling"));
+                }
+            }
+        }
+
+        // QUEENSIDE CASTLING (0-0-0)
+        // Rook at position 0, no pieces between, rook hasn't moved
+        if (!board.hasRookMoved(isWhite, true)) {
+            Tile rookTile = board.getTile(row, 0);
+            if (rookTile.isOccupied() && rookTile.getPiece().getClass().getSimpleName().equals("Rook")
+                    && rookTile.getPiece().isWhite() == isWhite) {
+                // Check if squares between are empty
+                if (!board.getTile(row, 1).isOccupied() && !board.getTile(row, 2).isOccupied()
+                        && !board.getTile(row, 3).isOccupied()) {
+                    moves.add(new Move(row, col, row, 2, "castling"));
+                }
+            }
+        }
     }
 
     @Override
